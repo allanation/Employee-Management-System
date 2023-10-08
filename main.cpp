@@ -153,7 +153,6 @@ public:
     }
 };
 
-// FOR OPTIMIZATION USER STORY
 string *toUppercase(const string &_word)
 {
     string uppercase;
@@ -164,6 +163,45 @@ string *toUppercase(const string &_word)
 
     string *pointer = new string(uppercase);
     return pointer;
+}
+
+string *processString(const string &_string)
+{
+    string word;
+
+    if (_string.find_first_of('"') == 0 && _string.find_last_of('"'))
+    {
+        cout << "It's a string!" << endl;
+        string *pointer = new string(word);
+        return pointer;
+    }
+    else
+    {
+        cout << "Invalid string: " << _string << "Missing quotation marks (\"...\")" << endl;
+        exit(0);
+    }
+}
+
+int processInt(string &_int)
+{
+    int num;
+
+    try
+    {
+        num = std::stoi(_int);
+        cout << "The integer is: " << num << std::endl;
+        return num;
+    }
+    catch (const invalid_argument &e)
+    {
+        cout << "Invalid argument: " << e.what() << std::endl;
+        exit(0);
+    }
+    catch (const out_of_range &e)
+    {
+        cout << "Out of range: " << e.what() << std::endl;
+        exit(0);
+    }
 }
 
 void create(int tableSelected, string &_values)
@@ -179,11 +217,33 @@ void create(int tableSelected, string &_values)
         // Trim leading and trailing spaces
         query.erase(0, query.find_first_not_of(" "));
         query.erase(query.find_last_not_of(" ") + 1);
+
         deconstructedQuery.push_back(query);
     }
-    for (const std::string &token : deconstructedQuery)
+    // This is where i set _values to the attributes
+    for (int i = 0; i < deconstructedQuery.size(); i++)
     {
-        std::cout << "Token: " << token << std::endl;
+        if (i == 0)
+        {
+            deconstructedQuery[0].erase(0, 1);
+        }
+
+        if (i == deconstructedQuery.size() - 1)
+        {
+            deconstructedQuery[i].erase(deconstructedQuery[i].find_last_not_of(";") + 1);
+            deconstructedQuery[i].erase(deconstructedQuery[i].find_last_not_of(")") + 1);
+        }
+
+        if (i == 0)
+        {
+            int check = processInt(deconstructedQuery[i]);
+        }
+        if (i == 1)
+        {
+            string *stringCheck = processString(deconstructedQuery[i]);
+        }
+
+        cout << "Token: " << deconstructedQuery[i] << endl;
     }
 
     switch (tableSelected)
@@ -199,7 +259,7 @@ void create(int tableSelected, string &_values)
         cout << "Created Company!" << _values << endl;
         break;
     default:
-        cout << "I don't even know how you got here" << endl;
+        cout << "I don't even know how you got here!" << endl;
         exit(0);
         break;
     }
@@ -250,31 +310,52 @@ void processSQL(string &_sqlQuery)
             table = deconstructedQuery[2];
             if (table == "employees" || table == "departments" || table == "companies")
             {
-                // check VALUES
+                // check validity of VALUES (...)
+                // find position of ( and then find position of ) THEN concat THEN send as props for create()
                 string values;
-                // FIX THIS!
-                //  find position of ( and then find position of ) THEN concat THEN send as props for create()
-                if (deconstructedQuery[4].find_first_of('(') == 0 && (deconstructedQuery[4].find_last_of(')') == deconstructedQuery[4].length() - 1 || deconstructedQuery[4].find_last_of(';') == deconstructedQuery[4].length() - 1))
+                size_t pos1 = std::string::npos;
+                size_t pos2 = std::string::npos;
+                string valueString;
+                for (int i = 4; i < deconstructedQuery.size(); i++)
                 {
-                    values = deconstructedQuery[4];
+                    // Ensure that right after VALUES comes the (...)
+                    // OPTIMIZATION: figure out error handling here bc it still proceeds to look for pos2
+                    if (deconstructedQuery[4].find_first_of('(') == 0 && pos1 == std::string::npos)
+                    {
+                        pos1 = i;
+                    }
+
+                    // Append values
+                    if (pos1 != std::string::npos)
+                    {
+                        valueString.append(deconstructedQuery[i]);
+                    }
+
+                    // Find when it ends
+                    if (deconstructedQuery[i].find_last_of(')') == deconstructedQuery[i].length() - 1 || (deconstructedQuery[i].find_last_of(')') == deconstructedQuery[i].length() - 2 && deconstructedQuery[i].find_last_of(';') == deconstructedQuery[i].length() - 1))
+                    {
+                        pos2 = i;
+                        break;
+                    }
                 }
-                else
+
+                if (pos1 == std::string::npos || pos2 == std::string::npos)
                 {
-                    cout << "Must include VALUES in parenthesis.\nEx.: INSERT INTO <table> VALUES (values);" << endl;
+                    cout << "Invalid VALUES missing either '(' or ')'" << endl;
                     exit(0);
                 }
 
                 if (table == "employees")
                 {
-                    create(1, values);
+                    create(1, valueString);
                 }
                 if (table == "departments")
                 {
-                    create(2, values);
+                    create(2, valueString);
                 }
                 if (table == "companies")
                 {
-                    create(3, values);
+                    create(3, valueString);
                 }
             }
             else
