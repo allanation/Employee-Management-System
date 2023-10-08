@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -12,7 +14,7 @@ private:
     int id, departmentId;
 
 public:
-    // // Constructor for the Employee class
+    // Constructor for the Employee class
     Employee(int _id, int _departmentId, const string &_firstName, const string &_lastName, const string &_jobTitle)
     {
         id = _id;
@@ -21,9 +23,19 @@ public:
         lastName = _lastName;
         jobTitle = _jobTitle;
     }
+    // TO BE REMOVED
+    Employee()
+    {
+        id = 0;
+        departmentId = 0;
+        firstName = "_firstName";
+        lastName = "_lastName";
+        jobTitle = "_jobTitle";
+    }
 
     void createEmployee()
     {
+        cout << "Created Employee!" << endl;
     }
     void readEmployee()
     {
@@ -65,9 +77,19 @@ public:
         name = _name;
         location = _location;
     }
+    // TO BE REMOVED
+    Department()
+    {
+        id = 0;
+        companyId = 0;
+        managedBy = 0;
+        name = "_name";
+        location = "_location";
+    }
 
     void createDepartment()
     {
+        cout << "Created Department!" << endl;
     }
     void readDepartment()
     {
@@ -103,8 +125,16 @@ public:
         name = _name;
     }
 
+    // TO BE REMOVED
+    Company()
+    {
+        id = 0;
+        name = "_name";
+    }
+
     void createCompany()
     {
+        cout << "Created Company!" << endl;
     }
     void readCompany()
     {
@@ -122,6 +152,169 @@ public:
         return name;
     }
 };
+
+// FOR OPTIMIZATION USER STORY
+string *toUppercase(const string &_word)
+{
+    string uppercase;
+    for (char c : _word)
+    {
+        uppercase += toupper(c);
+    }
+
+    string *pointer = new string(uppercase);
+    return pointer;
+}
+
+void create(int tableSelected, string &_values)
+{
+    // insert after destructuring
+    vector<string> deconstructedQuery;
+    string query;
+
+    istringstream iss(_values);
+
+    while (getline(iss, query, ','))
+    {
+        // Trim leading and trailing spaces
+        query.erase(0, query.find_first_not_of(" "));
+        query.erase(query.find_last_not_of(" ") + 1);
+        deconstructedQuery.push_back(query);
+    }
+    for (const std::string &token : deconstructedQuery)
+    {
+        std::cout << "Token: " << token << std::endl;
+    }
+
+    switch (tableSelected)
+    {
+    case 1:
+        // employees.insert(pair<int, Employee>(100, Employee(100, 10, "Allan", "Lopez", "Manager")));
+        cout << "Created Employee! with: " << _values << endl;
+        break;
+    case 2:
+        cout << "Created Department!" << _values << endl;
+        break;
+    case 3:
+        cout << "Created Company!" << _values << endl;
+        break;
+    default:
+        cout << "I don't even know how you got here" << endl;
+        exit(0);
+        break;
+    }
+}
+
+void processSQL(string &_sqlQuery)
+{
+    // Deconstructing sql query into a vector
+    istringstream iss(_sqlQuery);
+    vector<string> deconstructedQuery;
+    string query, table;
+
+    while (iss >> query)
+    {
+        deconstructedQuery.push_back(query);
+    }
+
+    // print whats in the dQ
+    for (const std::string &q : deconstructedQuery)
+    {
+        std::cout << q << std::endl;
+    }
+
+    // Format operator to be capitalized
+    string *uppercaseOperator = toUppercase(deconstructedQuery[0]);
+
+    // Search for the target word within the vector
+    size_t fromPosition = std::string::npos;
+    for (size_t i = 0; i < deconstructedQuery.size(); ++i)
+    {
+        cout << "checking: " << deconstructedQuery[i] << endl;
+        if (deconstructedQuery[i] == "from")
+        {
+            fromPosition = i;
+            table = deconstructedQuery[fromPosition + 1];
+            cout << "found it at: " << fromPosition << " in table: " << table << endl;
+            break; // Stop searching once the target is found
+        }
+    }
+
+    if (*uppercaseOperator == "INSERT")
+    {
+        // check correctness of query
+        string *uppercaseInto = toUppercase(deconstructedQuery[1]);
+
+        if (*uppercaseInto == "INTO")
+        {
+            table = deconstructedQuery[2];
+            if (table == "employees" || table == "departments" || table == "companies")
+            {
+                // check VALUES
+                string values;
+                // FIX THIS!
+                //  find position of ( and then find position of ) THEN concat THEN send as props for create()
+                if (deconstructedQuery[4].find_first_of('(') == 0 && (deconstructedQuery[4].find_last_of(')') == deconstructedQuery[4].length() - 1 || deconstructedQuery[4].find_last_of(';') == deconstructedQuery[4].length() - 1))
+                {
+                    values = deconstructedQuery[4];
+                }
+                else
+                {
+                    cout << "Must include VALUES in parenthesis.\nEx.: INSERT INTO <table> VALUES (values);" << endl;
+                    exit(0);
+                }
+
+                if (table == "employees")
+                {
+                    create(1, values);
+                }
+                if (table == "departments")
+                {
+                    create(2, values);
+                }
+                if (table == "companies")
+                {
+                    create(3, values);
+                }
+            }
+            else
+            {
+                cout << "Wrong table name.\nOnly have tables called: employees, departments, and companies.\nTry again!" << endl;
+                exit(0);
+            }
+        }
+        else
+        {
+            cout << "Must include INTO in your query.\nEx.: INSERT INTO <table> VALUES (values);" << endl;
+            exit(0);
+        }
+    }
+    else if (*uppercaseOperator == "SELECT")
+    {
+        cout << "READING~" << endl;
+        if (deconstructedQuery[1] == "*")
+        {
+            cout << "ALL" << endl;
+        }
+        else
+        {
+            cout << deconstructedQuery[1] << endl;
+        }
+    }
+    else if (*uppercaseOperator == "UPDATE")
+    {
+        cout << "UPDATING~" << endl;
+    }
+    else if (*uppercaseOperator == "DELETE")
+    {
+        cout << "DELETING~" << endl;
+    }
+    else
+    {
+        cout << "Invalid sql ciao~" << endl;
+        exit(0);
+    }
+}
 
 int main()
 {
@@ -159,32 +352,32 @@ int main()
     employees.insert(pair<int, Employee>(110, Employee(110, 14, "Paul", "Patel", "Engineer")));
     employees.insert(pair<int, Employee>(111, Employee(111, 11, "Lucas", "Strong", "Engineer")));
 
-    for (const auto &entry : employees)
-    {
-        cout << "Employee ID: " << entry.first << ", Name: " << entry.second.getFirstName() << endl;
-    }
-    for (const auto &entry : departments)
-    {
-        cout << "Department ID: " << entry.first << ", Managed By: " << entry.second.getManagedBy() << endl;
-    }
-    for (const auto &entry : companies)
-    {
-        cout << "Company ID: " << entry.first << ", Name: " << entry.second.getName() << endl;
-    }
+    // for (const auto &entry : employees)
+    // {
+    //     cout << "Employee ID: " << entry.first << ", Name: " << entry.second.getFirstName() << endl;
+    // }
+    // for (const auto &entry : departments)
+    // {
+    //     cout << "Department ID: " << entry.first << ", Managed By: " << entry.second.getManagedBy() << endl;
+    // }
+    // for (const auto &entry : companies)
+    // {
+    //     cout << "Company ID: " << entry.first << ", Name: " << entry.second.getName() << endl;
+    // }
 
     // CRUD OPS
     // personal rules:
-    //  1- CANNOT update or drop tables
+    //  1- CANNOT create or update or drop tables
     //  2- CAN crud records in tables
     // CREATE when INSERT INTO <table>(col1,col2,...) VALUES (val1,val2,...)
     // READ when SELECT (col1,col2,...,*) FROM <table> WHERE <expression>
     // UPDATE when UPDATE <table> SET col1=val1, col2=val2,... WHERE <expression>
     // DELETE when DELETE FROM <table> WHERE <expression>
 
-    // string sqlQuery;
-    // cout << "ENTER SQL QUERY" << endl;
-    // getline(cin, sqlQuery);
-    // cout << "Your input: " << sqlQuery << endl;
+    string sqlQuery, sqlOperator;
+    cout << "ENTER SQL QUERY" << endl;
+    getline(cin, sqlQuery);
+    processSQL(sqlQuery);
 
     return 0;
 }
