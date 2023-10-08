@@ -2,6 +2,9 @@
 
 Description: A simple command-line database where you use pointers to manage records, tables, and data relationships.
 
+## Demo
+(add demo recording here)
+
 ## Naming Convention
 ### Branches:
 
