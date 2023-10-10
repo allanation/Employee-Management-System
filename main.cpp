@@ -24,15 +24,6 @@ public:
         lastName = _lastName;
         jobTitle = _jobTitle;
     }
-    // TO BE REMOVED
-    Employee()
-    {
-        id = 0;
-        departmentId = 0;
-        firstName = "_firstName";
-        lastName = "_lastName";
-        jobTitle = "_jobTitle";
-    }
 
     void createEmployee()
     {
@@ -49,15 +40,35 @@ public:
     {
     }
 
+    int getId() const
+    {
+
+        return id;
+    }
+    int getDepartmentId() const
+    {
+        return departmentId;
+    }
     const string &getFirstName() const
     {
         return firstName;
     }
-
-    int getDepartmentId() const
+    const string &getLastName() const
     {
+        return lastName;
+    }
+    const string &getJobTitle() const
+    {
+        return jobTitle;
+    }
 
-        return departmentId;
+    void printEmployee()
+    {
+        cout << "Employee ID: " << id << endl;
+        cout << "Dapartment ID: " << departmentId << endl;
+        cout << "First Name: " << firstName << endl;
+        cout << "Last Name: " << lastName << endl;
+        cout << "Job Title: " << jobTitle << endl;
     }
 };
 
@@ -79,15 +90,6 @@ public:
         name = _name;
         location = _location;
     }
-    // TO BE REMOVED
-    Department()
-    {
-        id = 0;
-        companyId = 0;
-        managedBy = 0;
-        name = "_name";
-        location = "_location";
-    }
 
     void createDepartment()
     {
@@ -107,9 +109,29 @@ public:
     {
         return id;
     }
+    int getCompanyId() const
+    {
+        return companyId;
+    }
     int getManagedBy() const
     {
         return managedBy;
+    }
+    const string &getName() const
+    {
+        return name;
+    }
+    const string &getLocation() const
+    {
+        return location;
+    }
+    void printDepartment()
+    {
+        cout << "Department ID: " << id << endl;
+        cout << "Company ID: " << companyId << endl;
+        cout << "Managed By: " << managedBy << endl;
+        cout << "Name: " << name << endl;
+        cout << "Location: " << location << endl;
     }
 };
 
@@ -127,6 +149,11 @@ public:
         id = _id;
         name = _name;
     }
+    Company()
+    {
+        id = 0;
+        name = "";
+    }
 
     void createCompany()
     {
@@ -142,20 +169,28 @@ public:
     void deleteCompany()
     {
     }
-
+    int getId() const
+    {
+        return id;
+    }
     const string &getName() const
     {
         return name;
     }
+    void printCompany()
+    {
+        cout << "Company ID: " << id << endl;
+        cout << "Name: " << name << endl;
+    }
 };
 
-struct Database
-{
-    // Initialize tables
-    map<int, Employee> employeesD;
-    map<int, Department> departmentsD;
-    map<int, Company> companiesD;
-};
+// struct Database
+// {
+//     // Initialize tables
+//     map<int, Employee> employeesD;
+//     map<int, Department> departmentsD;
+//     map<int, Company> companiesD;
+// };
 
 string *toUppercase(const string &_word)
 {
@@ -215,11 +250,234 @@ map<int, Employee> employees;
 map<int, Department> departments;
 map<int, Company> companies;
 
-// Initialize database
-// Database db;
+void select(int tableSelected, string &_columns)
+{
+    // insert after destructuring
+    vector<string> deconstructedColumns;
+    string query;
+
+    istringstream iss(_columns);
+
+    while (getline(iss, query, ','))
+    {
+        // Trim leading and trailing spaces
+        query.erase(0, query.find_first_not_of(" "));
+        query.erase(query.find_last_not_of(" ") + 1);
+
+        deconstructedColumns.push_back(query);
+    }
+
+    switch (tableSelected)
+    {
+    case 1:
+    {
+        if (deconstructedColumns[0] == "*")
+        {
+            cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+            for (const auto &employee : employees)
+            {
+                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+            }
+        }
+        else
+        {
+
+            for (int i = 0; i < employees.size(); i++)
+            {
+                vector<string> uppercaseColumns;
+                // print column headers
+                if (i == 0)
+                {
+                    for (const auto &entry : deconstructedColumns)
+                    {
+                        string *uppercase = toUppercase(entry);
+                        uppercaseColumns.push_back(*uppercase);
+                        cout << *uppercase << "\t\t";
+                    }
+                    cout << endl;
+                }
+
+                // OPTIMIZATION: remove double for-loop
+                // loop through table and print desired columns
+                for (const auto &employee : employees)
+                {
+                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    {
+                        if (uppercaseColumns[i] == "ID")
+                        {
+                            cout << employee.first << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "DEPARTMENTID")
+                        {
+                            cout << employee.second.getDepartmentId() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "FIRSTNAME")
+                        {
+                            cout << employee.second.getFirstName() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "LASTNAME")
+                        {
+                            cout << employee.second.getLastName() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "JOBTITLE")
+                        {
+                            cout << employee.second.getJobTitle() << "\t\t";
+                        }
+                        else
+                        {
+                            cout << "Invalid columns: Employees table's only columns are:\nid, departmentId, firstName, lastName, jobTitle" << endl;
+                            exit(0);
+                        }
+
+                        if (i == uppercaseColumns.size() - 1)
+                        {
+                            cout << endl;
+                        }
+                    }
+                }
+            }
+        }
+        cout << "\nemployees table selected!" << endl;
+    }
+    break;
+    case 2:
+    {
+        if (deconstructedColumns[0] == "*")
+        {
+            cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+            for (const auto &department : departments)
+            {
+                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < departments.size(); i++)
+            {
+                vector<string> uppercaseColumns;
+                // print column headers
+                if (i == 0)
+                {
+                    for (const auto &entry : deconstructedColumns)
+                    {
+                        string *uppercase = toUppercase(entry);
+                        uppercaseColumns.push_back(*uppercase);
+                        cout << *uppercase << "\t\t";
+                    }
+                    cout << endl;
+                }
+
+                // OPTIMIZATION: remove double for-loop
+                // loop through table and print desired columns
+                for (const auto &department : departments)
+                {
+                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    {
+                        if (uppercaseColumns[i] == "ID")
+                        {
+                            cout << department.first << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "COMPANYID")
+                        {
+                            cout << department.second.getCompanyId() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "MANAGEDBY")
+                        {
+                            cout << department.second.getManagedBy() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "NAME")
+                        {
+                            cout << department.second.getName() << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "LOCATION")
+                        {
+                            cout << department.second.getLocation() << "\t\t";
+                        }
+                        else
+                        {
+                            cout << "Invalid columns: Departments table's only columns are:\nid, companyId, managedBy, name, location" << endl;
+                            exit(0);
+                        }
+
+                        if (i == uppercaseColumns.size() - 1)
+                        {
+                            cout << endl;
+                        }
+                    }
+                }
+            }
+        }
+        cout << "departments table selected!" << endl;
+    }
+    break;
+    case 3:
+    {
+        if (deconstructedColumns[0] == "*")
+        {
+            cout << "ID\t\tNAME" << endl;
+            for (const auto &company : companies)
+            {
+                cout << company.first << "\t\t" << company.second.getName() << endl;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < departments.size(); i++)
+            {
+                vector<string> uppercaseColumns;
+                // print column headers
+                if (i == 0)
+                {
+                    for (const auto &entry : deconstructedColumns)
+                    {
+                        string *uppercase = toUppercase(entry);
+                        uppercaseColumns.push_back(*uppercase);
+                        cout << *uppercase << "\t\t";
+                    }
+                    cout << endl;
+                }
+
+                // OPTIMIZATION: remove double for-loop
+                // loop through table and print desired columns
+                for (const auto &company : companies)
+                {
+                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    {
+                        if (uppercaseColumns[i] == "ID")
+                        {
+                            cout << company.first << "\t\t";
+                        }
+                        else if (uppercaseColumns[i] == "NAME")
+                        {
+                            cout << company.second.getName() << "\t\t";
+                        }
+                        else
+                        {
+                            cout << "Invalid columns: Companies table's only columns are:\nid, name" << endl;
+                            exit(0);
+                        }
+
+                        if (i == uppercaseColumns.size() - 1)
+                        {
+                            cout << endl;
+                        }
+                    }
+                }
+            }
+        }
+        cout << "companies table selected!" << endl;
+    }
+    break;
+    default:
+        cout << "How did you get here?" << endl;
+        exit(0);
+        break;
+    }
+}
 
 void create(int tableSelected, string &_values)
 {
+    // OPTIMIZATION: this can be a method BELOW
     // insert after destructuring
     vector<string> deconstructedQuery;
     string query;
@@ -249,6 +507,7 @@ void create(int tableSelected, string &_values)
             deconstructedQuery[i].erase(deconstructedQuery[i].find_last_not_of(")") + 1);
         }
     }
+    // OPTIMIZATION: this can be a method ABOVE
 
     switch (tableSelected)
     {
@@ -352,11 +611,11 @@ void processSQL(string &_sqlQuery)
     size_t fromPosition = std::string::npos;
     for (size_t i = 0; i < deconstructedQuery.size(); ++i)
     {
+        // OPTIMIZATION: ERROR HANDLING: "from" needs to be uppercased but like howd i find it do i just assume?
         if (deconstructedQuery[i] == "from")
         {
             fromPosition = i;
             table = deconstructedQuery[fromPosition + 1];
-            cout << "found it at: " << fromPosition << " in table: " << table << endl;
             break; // Stop searching once the target is found
         }
     }
@@ -433,14 +692,32 @@ void processSQL(string &_sqlQuery)
     }
     else if (*uppercaseOperator == "SELECT")
     {
-        cout << "READING~" << endl;
-        if (deconstructedQuery[1] == "*")
+        string columns;
+        size_t pos1 = std::string::npos;
+        string columnString;
+        for (int i = 1; i < fromPosition; i++)
         {
-            cout << "ALL" << endl;
+            // Ensure that right after VALUES comes the (...)
+            // OPTIMIZATION: figure out error handling here bc it still proceeds to look for pos2
+            if (deconstructedQuery[1] != "from" && pos1 == std::string::npos)
+            {
+                pos1 = i;
+            }
+
+            columnString.append(deconstructedQuery[i]);
         }
-        else
+        table.erase(table.find_last_not_of(';') + 1);
+        if (table == "employees")
         {
-            cout << deconstructedQuery[1] << endl;
+            select(1, columnString);
+        }
+        if (table == "departments")
+        {
+            select(2, columnString);
+        }
+        if (table == "companies")
+        {
+            select(3, columnString);
         }
     }
     else if (*uppercaseOperator == "UPDATE")
@@ -488,20 +765,6 @@ int main()
     employees.insert(pair<int, Employee>(3009, Employee(3009, 2003, "Katelyn", "Ronston", "Designer")));
     employees.insert(pair<int, Employee>(3010, Employee(3010, 2004, "Paul", "Patel", "Engineer")));
     employees.insert(pair<int, Employee>(3011, Employee(3011, 2001, "Lucas", "Strong", "Engineer")));
-
-    // for (const auto &entry : employees)
-    // {
-    //     cout << "Employee ID: " << entry.first << ", Name: " << entry.second.getFirstName() << endl;
-    // }
-
-    // for (const auto &entry : departments)
-    // {
-    //     cout << "Department ID: " << entry.first << ", Managed By: " << entry.second.getManagedBy() << endl;
-    // }
-    // for (const auto &entry : companies)
-    // {
-    //     cout << "Company ID: " << entry.first << ", Name: " << entry.second.getName() << endl;
-    // }
 
     // CRUD OPS
     // personal rules:
