@@ -24,38 +24,47 @@ public:
         lastName = _lastName;
         jobTitle = _jobTitle;
     }
-
-    void createEmployee()
+    Employee()
     {
-        cout << "Created Employee!" << endl;
-    }
-    void readEmployee()
-    {
-        cout << "Library is now open for employee number " << id << endl;
-    }
-    void updateEmployee()
-    {
-    }
-    void deleteEmployee()
-    {
+        // OPTIMIZATION: KEEP TRACK OF ID TO AUTOMATICALLY ASSIGN ID WITHOUT CHECKING FOR DUPS
+        id = 0;
+        departmentId = 0;
+        firstName = "_firstName";
+        lastName = "_lastName";
+        jobTitle = "_jobTitle";
     }
 
     int getId() const
     {
-
         return id;
+    }
+    void setDepartmentId(int _departmentId)
+    {
+        departmentId = _departmentId;
     }
     int getDepartmentId() const
     {
         return departmentId;
     }
+    void setFirstName(const string &_firstName)
+    {
+        firstName = _firstName;
+    }
     const string &getFirstName() const
     {
         return firstName;
     }
+    void setLastName(const string &_lastName)
+    {
+        lastName = _lastName;
+    }
     const string &getLastName() const
     {
         return lastName;
+    }
+    void setJobTitle(const string &_jobTitle)
+    {
+        jobTitle = _jobTitle;
     }
     const string &getJobTitle() const
     {
@@ -206,7 +215,6 @@ string *toUppercase(const string &_word)
 
 string *processString(string &_string)
 {
-
     if (_string.find_first_of('"') == 0 && _string.find_last_of('"'))
     {
         _string.erase(0, 1);
@@ -249,6 +257,83 @@ int processInt(string &_int)
 map<int, Employee> employees;
 map<int, Department> departments;
 map<int, Company> companies;
+
+void update(int tableSelected, vector<string> _columns, vector<string> _values)
+{
+    switch (tableSelected)
+    {
+    case 1:
+    {
+        string empId = _values[_values.size() - 1];
+        int validId = processInt(empId);
+        cout << "EEE: " << validId << endl;
+        for (int i = 0; i < _columns.size(); i++)
+        {
+            if (_columns[i] == "DEPARTMENTID")
+            {
+                int check = processInt(_values[i]);
+                // e.setDepartmentId(check);
+                cout << "deptID: " << check << endl;
+            }
+            else if (_columns[i] == "FIRSTNAME")
+            {
+                string *check = processString(_values[i]);
+                employees[validId].setFirstName(*check);
+                cout << "FNAME: " << *check << endl;
+            }
+
+            else if (_columns[i] == "LASTNAME")
+            {
+                string *check = processString(_values[i]);
+                // e.setLastName(*check);
+                cout << *check << endl;
+                cout << "LNAME: " << *check << endl;
+            }
+            else if (_columns[i] == "JOBTITLE")
+            {
+                string *check = processString(_values[i]);
+                // e.setJobTitle(*check);
+                cout << "jt: " << *check << endl;
+            }
+            else if (_columns[i] == "ID")
+            {
+                cout << "ID: " << _values[i] << endl;
+            }
+            else
+            {
+                cout << "Invalid column name!" << endl;
+            }
+        }
+
+        cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+        for (const auto &employee : employees)
+        {
+            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+        }
+        cout << "Updating employee: " << validId << endl;
+        cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+        for (const auto &employee : employees)
+        {
+            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+        }
+    }
+    break;
+    case 2:
+    {
+        cout << "Updating department: " << endl;
+    }
+    break;
+    case 3:
+    {
+        cout << "Updating company: " << endl;
+    }
+    break;
+    default:
+        cout << "Why are you here?" << endl;
+        exit(0);
+        break;
+    }
+}
 
 void select(int tableSelected, string &_columns)
 {
@@ -478,7 +563,6 @@ void select(int tableSelected, string &_columns)
 void create(int tableSelected, string &_values)
 {
     // OPTIMIZATION: this can be a method BELOW
-    // insert after destructuring
     vector<string> deconstructedQuery;
     string query;
 
@@ -722,7 +806,91 @@ void processSQL(string &_sqlQuery)
     }
     else if (*uppercaseOperator == "UPDATE")
     {
-        cout << "UPDATING~" << endl;
+        string *setCheck = toUppercase(deconstructedQuery[2]);
+        if (*setCheck == "SET")
+        {
+            vector<string> columns;
+            vector<string> values;
+            size_t wherePos = std::string::npos;
+            string findId;
+            string appendedString;
+
+            for (int i = 3; i < deconstructedQuery.size(); i++)
+            {
+                if (wherePos == std::string::npos)
+                {
+                    // look for where and when to stop
+                    if (deconstructedQuery[i] == "where")
+                    {
+                        wherePos = i;
+                    }
+                    else
+                    {
+                        appendedString.append(deconstructedQuery[i]);
+                    }
+                }
+                else
+                {
+                    // format id=<number>
+                    findId.append(deconstructedQuery[i]);
+                    // append to stringToProcess
+                    if (i == deconstructedQuery.size() - 1)
+                    {
+                        if (findId[findId.length() - 1] == ';')
+                        {
+                            findId.erase(findId.length() - 1);
+                        }
+                        appendedString.append(",");
+                        appendedString.append(findId);
+                    }
+                }
+            }
+
+            vector<std::string> tokens;
+            istringstream ss(appendedString);
+            string token;
+            while (std::getline(ss, token, ','))
+            {
+                tokens.push_back(token); // Split and store the parts
+            }
+
+            for (const auto &entry : tokens)
+            {
+                // cout << "entry: " << entry << endl;
+                size_t equalSignPos = std::string::npos;
+                equalSignPos = entry.find('=');
+
+                if (equalSignPos != std::string::npos)
+                {
+                    string *uppercaseColumn = toUppercase(entry.substr(0, equalSignPos));
+                    columns.push_back(*uppercaseColumn);
+                    values.push_back(entry.substr(equalSignPos + 1));
+                }
+                else
+                {
+                    cout << "Error: No '=' between column and value? is it where?" << entry << endl;
+                    exit(0);
+                }
+            }
+
+            table = deconstructedQuery[1];
+            if (table == "employees")
+            {
+                update(1, columns, values);
+            }
+            if (table == "departments")
+            {
+                update(2, columns, values);
+            }
+            if (table == "companies")
+            {
+                update(3, columns, values);
+            }
+        }
+        else
+        {
+            cout << "Invalid SQL: UPDATE <table> SET col1=val1,..." << endl;
+        }
     }
     else if (*uppercaseOperator == "DELETE")
     {
@@ -764,8 +932,16 @@ int main()
     employees.insert(pair<int, Employee>(3008, Employee(3008, 2001, "Manon", "Messier", "Engineer")));
     employees.insert(pair<int, Employee>(3009, Employee(3009, 2003, "Katelyn", "Ronston", "Designer")));
     employees.insert(pair<int, Employee>(3010, Employee(3010, 2004, "Paul", "Patel", "Engineer")));
-    employees.insert(pair<int, Employee>(3011, Employee(3011, 2001, "Lucas", "Strong", "Engineer")));
+    employees.insert(pair<int, Employee>(3010, Employee(3010, 2001, "Lucas", "Strong", "Engineer")));
 
+    employees[3010].setFirstName("Lucas");
+    cout << "HELLo?: " << employees[3010].getFirstName() << endl;
+
+    // cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+    // for (const auto &employee : employees)
+    // {
+    //     cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+    // }
     // CRUD OPS
     // personal rules:
     //  1- CANNOT create or update or drop tables
