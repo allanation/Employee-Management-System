@@ -99,36 +99,47 @@ public:
         name = _name;
         location = _location;
     }
+    Department()
+    {
+        // OPTIMIZATION: KEEP TRACK OF ID TO AUTOMATICALLY ASSIGN ID WITHOUT CHECKING FOR DUPS
+        id = 0;
+        companyId = 0;
+        managedBy = 0;
+        name = "_name";
+        location = "_location";
+    }
 
-    void createDepartment()
-    {
-        cout << "Created Department!" << endl;
-    }
-    void readDepartment()
-    {
-        cout << "\n\nYou are reading the department \n";
-    }
-    void updateDepartment()
-    {
-    }
-    void deleteDepartment()
-    {
-    }
     int getId() const
     {
         return id;
+    }
+    void setCompanyId(int _companyId)
+    {
+        companyId = _companyId;
     }
     int getCompanyId() const
     {
         return companyId;
     }
+    void setManagedBy(int _managedBy)
+    {
+        managedBy = _managedBy;
+    }
     int getManagedBy() const
     {
         return managedBy;
     }
+    void setName(const string &_name)
+    {
+        name = _name;
+    }
     const string &getName() const
     {
         return name;
+    }
+    void setLocation(const string &_location)
+    {
+        location = _location;
     }
     const string &getLocation() const
     {
@@ -163,24 +174,13 @@ public:
         id = 0;
         name = "";
     }
-
-    void createCompany()
-    {
-        cout << "Created Company!" << endl;
-    }
-    void readCompany()
-    {
-        cout << "Read company hoe!";
-    }
-    void updateCompany()
-    {
-    }
-    void deleteCompany()
-    {
-    }
     int getId() const
     {
         return id;
+    }
+    void setName(const string &_name)
+    {
+        name = _name;
     }
     const string &getName() const
     {
@@ -288,7 +288,6 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
                 {
                     string *check = processString(_values[i]);
                     employees[validId].setLastName(*check);
-                    cout << *check << endl;
                     cout << "LNAME: " << *check << endl;
                 }
                 else if (_columns[i] == "JOBTITLE")
@@ -322,11 +321,93 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
     break;
     case 2:
     {
-        cout << "Updating department: " << endl;
+        if (departments.count(validId) > 0)
+        {
+            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
+            for (int i = 0; i < _columns.size(); i++)
+            {
+                if (_columns[i] == "COMPANYID")
+                {
+                    int check = processInt(_values[i]);
+                    departments[validId].setCompanyId(check);
+                    cout << "compId: " << check << endl;
+                }
+                else if (_columns[i] == "MANAGEDBY")
+                {
+                    int check = processInt(_values[i]);
+                    departments[validId].setManagedBy(check);
+                    cout << "MANAGEDBY: " << check << endl;
+                }
+
+                else if (_columns[i] == "NAME")
+                {
+                    string *check = processString(_values[i]);
+                    departments[validId].setName(*check);
+                    cout << "NAME: " << *check << endl;
+                }
+                else if (_columns[i] == "LOCATION")
+                {
+                    string *check = processString(_values[i]);
+                    departments[validId].setLocation(*check);
+                    cout << "LOCATION: " << *check << endl;
+                }
+                else if (_columns[i] == "ID")
+                {
+                    cout << "ID: " << _values[i] << endl;
+                }
+                else
+                {
+                    cout << "Invalid column name!" << endl;
+                }
+            }
+        }
+        else
+        {
+            cout << "ID doesn't exits" << endl;
+            exit(0);
+        }
+
+        cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+        for (const auto &department : departments)
+        {
+            cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+        }
     }
     break;
     case 3:
     {
+        if (companies.count(validId) > 0)
+        {
+            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
+            for (int i = 0; i < _columns.size(); i++)
+            {
+                if (_columns[i] == "NAME")
+                {
+                    string *check = processString(_values[i]);
+                    companies[validId].setName(*check);
+                    cout << "NAME: " << *check << endl;
+                }
+                else if (_columns[i] == "ID")
+                {
+                    cout << "ID: " << _values[i] << endl;
+                }
+                else
+                {
+                    cout << "Invalid column name!" << endl;
+                }
+            }
+        }
+        else
+        {
+            cout << "ID doesn't exits" << endl;
+            exit(0);
+        }
+
+        cout << "ID\t\tNAME" << endl;
+        for (const auto &company : companies)
+        {
+            cout << company.first << "\t\t" << company.second.getName() << endl;
+        }
         cout << "Updating company: " << endl;
     }
     break;
