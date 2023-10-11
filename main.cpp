@@ -260,57 +260,59 @@ map<int, Company> companies;
 
 void update(int tableSelected, vector<string> _columns, vector<string> _values)
 {
+    string empId = _values[_values.size() - 1];
+    int validId = processInt(empId);
+    cout << "EEE: " << validId << endl;
     switch (tableSelected)
     {
     case 1:
     {
-        string empId = _values[_values.size() - 1];
-        int validId = processInt(empId);
-        cout << "EEE: " << validId << endl;
-        for (int i = 0; i < _columns.size(); i++)
+        if (employees.count(validId) > 0)
         {
-            if (_columns[i] == "DEPARTMENTID")
+            for (int i = 0; i < _columns.size(); i++)
             {
-                int check = processInt(_values[i]);
-                // e.setDepartmentId(check);
-                cout << "deptID: " << check << endl;
-            }
-            else if (_columns[i] == "FIRSTNAME")
-            {
-                string *check = processString(_values[i]);
-                employees[validId].setFirstName(*check);
-                cout << "FNAME: " << *check << endl;
-            }
+                if (_columns[i] == "DEPARTMENTID")
+                {
+                    int check = processInt(_values[i]);
+                    employees[validId].setDepartmentId(check);
+                    cout << "deptID: " << check << endl;
+                }
+                else if (_columns[i] == "FIRSTNAME")
+                {
+                    string *check = processString(_values[i]);
+                    employees[validId].setFirstName(*check);
+                    cout << "FNAME: " << *check << endl;
+                }
 
-            else if (_columns[i] == "LASTNAME")
-            {
-                string *check = processString(_values[i]);
-                // e.setLastName(*check);
-                cout << *check << endl;
-                cout << "LNAME: " << *check << endl;
-            }
-            else if (_columns[i] == "JOBTITLE")
-            {
-                string *check = processString(_values[i]);
-                // e.setJobTitle(*check);
-                cout << "jt: " << *check << endl;
-            }
-            else if (_columns[i] == "ID")
-            {
-                cout << "ID: " << _values[i] << endl;
-            }
-            else
-            {
-                cout << "Invalid column name!" << endl;
+                else if (_columns[i] == "LASTNAME")
+                {
+                    string *check = processString(_values[i]);
+                    employees[validId].setLastName(*check);
+                    cout << *check << endl;
+                    cout << "LNAME: " << *check << endl;
+                }
+                else if (_columns[i] == "JOBTITLE")
+                {
+                    string *check = processString(_values[i]);
+                    employees[validId].setJobTitle(*check);
+                    cout << "jt: " << *check << endl;
+                }
+                else if (_columns[i] == "ID")
+                {
+                    cout << "ID: " << _values[i] << endl;
+                }
+                else
+                {
+                    cout << "Invalid column name!" << endl;
+                }
             }
         }
-
-        cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
-        for (const auto &employee : employees)
+        else
         {
-            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+            cout << "ID doesn't exits" << endl;
+            exit(0);
         }
-        cout << "Updating employee: " << validId << endl;
+
         cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
         for (const auto &employee : employees)
         {
@@ -932,10 +934,7 @@ int main()
     employees.insert(pair<int, Employee>(3008, Employee(3008, 2001, "Manon", "Messier", "Engineer")));
     employees.insert(pair<int, Employee>(3009, Employee(3009, 2003, "Katelyn", "Ronston", "Designer")));
     employees.insert(pair<int, Employee>(3010, Employee(3010, 2004, "Paul", "Patel", "Engineer")));
-    employees.insert(pair<int, Employee>(3010, Employee(3010, 2001, "Lucas", "Strong", "Engineer")));
-
-    employees[3010].setFirstName("Lucas");
-    cout << "HELLo?: " << employees[3010].getFirstName() << endl;
+    employees.insert(pair<int, Employee>(3011, Employee(3011, 2001, "Lucas", "Strong", "Engineer")));
 
     // cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
     // for (const auto &employee : employees)
