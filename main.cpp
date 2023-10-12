@@ -258,11 +258,81 @@ map<int, Employee> employees;
 map<int, Department> departments;
 map<int, Company> companies;
 
+void deleteFrom(int tableSelected, int _id)
+{
+    switch (tableSelected)
+    {
+    case 1:
+    {
+        if (employees.count(_id) > 0)
+        {
+            employees.erase(_id);
+            cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+            for (const auto &employee : employees)
+            {
+                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+            }
+
+            cout << "DELETED ID:" << _id << endl;
+        }
+        else
+        {
+            cout << "INVALID ID!" << endl;
+        }
+    }
+    break;
+    case 2:
+    {
+        if (departments.count(_id) > 0)
+        {
+            departments.erase(_id);
+            cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+            for (const auto &department : departments)
+            {
+                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+            }
+            cout << "DELETED ID:" << _id << endl;
+        }
+        else
+        {
+            cout << "INVALID ID!" << endl;
+            exit(0);
+        }
+    }
+    break;
+    case 3:
+    {
+        if (companies.count(_id) > 0)
+        {
+            companies.erase(_id);
+            cout << "ID\t\tNAME" << endl;
+            for (const auto &company : companies)
+            {
+                cout << company.first << "\t\t" << company.second.getName() << endl;
+            }
+            cout << "DELETED ID:" << _id << endl;
+        }
+        else
+        {
+            cout << "INVALID ID!" << endl;
+            exit(0);
+        }
+    }
+    break;
+    default:
+    {
+        cout << "HOW>?!" << endl;
+        exit(0);
+    }
+    break;
+    }
+}
+
 void update(int tableSelected, vector<string> _columns, vector<string> _values)
 {
     string empId = _values[_values.size() - 1];
     int validId = processInt(empId);
-    cout << "EEE: " << validId << endl;
+    cout << "Id: " << validId << endl;
     switch (tableSelected)
     {
     case 1:
@@ -977,7 +1047,41 @@ void processSQL(string &_sqlQuery)
     }
     else if (*uppercaseOperator == "DELETE")
     {
-        cout << "DELETING~" << endl;
+        table = deconstructedQuery[2];
+        string stringId;
+        string temp;
+        size_t semiPos = std::string::npos;
+        for (int i = 4; i < deconstructedQuery.size(); i++)
+        {
+
+            semiPos = deconstructedQuery[i].find(';');
+            if (semiPos != std::string::npos)
+            {
+                temp = deconstructedQuery[i].substr(0, semiPos);
+                stringId.append(temp);
+            }
+            else
+            {
+                stringId.append(deconstructedQuery[i]);
+            }
+        }
+
+        size_t equalPos = stringId.find('=');
+        string id = stringId.substr(equalPos + 1);
+        int validId = processInt(id);
+
+        if (table == "employees")
+        {
+            deleteFrom(1, validId);
+        }
+        if (table == "departments")
+        {
+            deleteFrom(2, validId);
+        }
+        if (table == "companies")
+        {
+            deleteFrom(3, validId);
+        }
     }
     else
     {
@@ -1016,7 +1120,6 @@ int main()
     employees.insert(pair<int, Employee>(3009, Employee(3009, 2003, "Katelyn", "Ronston", "Designer")));
     employees.insert(pair<int, Employee>(3010, Employee(3010, 2004, "Paul", "Patel", "Engineer")));
     employees.insert(pair<int, Employee>(3011, Employee(3011, 2001, "Lucas", "Strong", "Engineer")));
-
     // cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
     // for (const auto &employee : employees)
     // {
