@@ -193,13 +193,21 @@ public:
     }
 };
 
-// struct Database
-// {
-//     // Initialize tables
-//     map<int, Employee> employeesD;
-//     map<int, Department> departmentsD;
-//     map<int, Company> companiesD;
-// };
+string addSpaces(const string &_string)
+{
+    size_t maxWidth = 16;
+    if (_string.length() >= maxWidth)
+    {
+        return _string;
+    }
+
+    size_t spacesToAdd = maxWidth - _string.length();
+
+    string spaces(spacesToAdd, ' ');
+
+    string spacedString = _string + spaces;
+    return spacedString;
+}
 
 string *toUppercase(const string &_word)
 {
@@ -382,10 +390,10 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
             exit(0);
         }
 
-        cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+        cout << "ID\t\t" << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
         for (const auto &employee : employees)
         {
-            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
         }
     }
     break;
@@ -511,10 +519,10 @@ void select(int tableSelected, string &_columns)
     {
         if (deconstructedColumns[0] == "*")
         {
-            cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
             for (const auto &employee : employees)
             {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
             }
         }
         else
@@ -530,7 +538,7 @@ void select(int tableSelected, string &_columns)
                     {
                         string *uppercase = toUppercase(entry);
                         uppercaseColumns.push_back(*uppercase);
-                        cout << *uppercase << "\t\t";
+                        cout << addSpaces(*uppercase);
                     }
                     cout << endl;
                 }
@@ -551,15 +559,15 @@ void select(int tableSelected, string &_columns)
                         }
                         else if (uppercaseColumns[i] == "FIRSTNAME")
                         {
-                            cout << employee.second.getFirstName() << "\t\t";
+                            cout << addSpaces(employee.second.getFirstName());
                         }
                         else if (uppercaseColumns[i] == "LASTNAME")
                         {
-                            cout << employee.second.getLastName() << "\t\t";
+                            cout << addSpaces(employee.second.getLastName());
                         }
                         else if (uppercaseColumns[i] == "JOBTITLE")
                         {
-                            cout << employee.second.getJobTitle() << "\t\t";
+                            cout << addSpaces(employee.second.getJobTitle());
                         }
                         else
                         {
@@ -575,17 +583,17 @@ void select(int tableSelected, string &_columns)
                 }
             }
         }
-        cout << "\nemployees table selected!" << endl;
+        cout << "\nEmployees table selected!" << endl;
     }
     break;
     case 2:
     {
         if (deconstructedColumns[0] == "*")
         {
-            cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+            cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
             for (const auto &department : departments)
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
             }
         }
         else
@@ -600,7 +608,7 @@ void select(int tableSelected, string &_columns)
                     {
                         string *uppercase = toUppercase(entry);
                         uppercaseColumns.push_back(*uppercase);
-                        cout << *uppercase << "\t\t";
+                        cout << addSpaces(*uppercase);
                     }
                     cout << endl;
                 }
@@ -625,11 +633,11 @@ void select(int tableSelected, string &_columns)
                         }
                         else if (uppercaseColumns[i] == "NAME")
                         {
-                            cout << department.second.getName() << "\t\t";
+                            cout << addSpaces(department.second.getName());
                         }
                         else if (uppercaseColumns[i] == "LOCATION")
                         {
-                            cout << department.second.getLocation() << "\t\t";
+                            cout << addSpaces(department.second.getLocation());
                         }
                         else
                         {
@@ -645,17 +653,17 @@ void select(int tableSelected, string &_columns)
                 }
             }
         }
-        cout << "departments table selected!" << endl;
+        cout << "Departments table selected!" << endl;
     }
     break;
     case 3:
     {
         if (deconstructedColumns[0] == "*")
         {
-            cout << "ID\t\tNAME" << endl;
+            cout << addSpaces("ID") << addSpaces("NAME") << endl;
             for (const auto &company : companies)
             {
-                cout << company.first << "\t\t" << company.second.getName() << endl;
+                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
             }
         }
         else
@@ -670,7 +678,7 @@ void select(int tableSelected, string &_columns)
                     {
                         string *uppercase = toUppercase(entry);
                         uppercaseColumns.push_back(*uppercase);
-                        cout << *uppercase << "\t\t";
+                        cout << addSpaces(*uppercase) << "\t\t";
                     }
                     cout << endl;
                 }
@@ -687,7 +695,7 @@ void select(int tableSelected, string &_columns)
                         }
                         else if (uppercaseColumns[i] == "NAME")
                         {
-                            cout << company.second.getName() << "\t\t";
+                            cout << addSpaces(company.second.getName()) << "\t\t";
                         }
                         else
                         {
@@ -703,7 +711,7 @@ void select(int tableSelected, string &_columns)
                 }
             }
         }
-        cout << "companies table selected!" << endl;
+        cout << "Companies table selected!" << endl;
     }
     break;
     default:
@@ -1093,10 +1101,8 @@ void processSQL(string &_sqlQuery)
 int main()
 {
     system("clear");
-    cout
-        << "\n\t\t\t* WELCOME TO THE COMPANY DATABASE *" << endl;
-
-    cout << "\nDescription: Design a simple command-line database where you use pointers to manage records, tables, and data relationships. You can implement basic database operations like insertion, retrieval, and deletion.\n";
+    cout << "* WELCOME TO THE COMPANY DATABASE *" << endl;
+    cout << "===================================" << endl;
 
     // Populate tables
     companies.insert(pair<int, Company>(1000, Company(1000, "Apple")));
@@ -1120,22 +1126,27 @@ int main()
     employees.insert(pair<int, Employee>(3009, Employee(3009, 2003, "Katelyn", "Ronston", "Designer")));
     employees.insert(pair<int, Employee>(3010, Employee(3010, 2004, "Paul", "Patel", "Engineer")));
     employees.insert(pair<int, Employee>(3011, Employee(3011, 2001, "Lucas", "Strong", "Engineer")));
-    // cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
-    // for (const auto &employee : employees)
-    // {
-    //     cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
-    // }
-    // CRUD OPS
-    // personal rules:
-    //  1- CANNOT create or update or drop tables
-    //  2- CAN crud records in tables
-    // CREATE when INSERT INTO <table>(col1,col2,...) VALUES (val1,val2,...)
-    // READ when SELECT (col1,col2,...,*) FROM <table> WHERE <expression>
-    // UPDATE when UPDATE <table> SET col1=val1, col2=val2,... WHERE <expression>
-    // DELETE when DELETE FROM <table> WHERE <expression>
 
-    string sqlQuery, sqlOperator;
-    cout << "ENTER SQL QUERY" << endl;
+    string sqlQuery;
+
+    cout << "\nTo add a record to the database: " << endl;
+    cout << "INSERT INTO <table> VALUES (value1,value2,...);" << endl;
+    cout << "\nTo see records from database: " << endl;
+    cout << "SELECT column1,column2,... FROM <table>;" << endl;
+    cout << "\nTo update a record from database: " << endl;
+    cout << "UPDATE <table> SET column1=value1,column2=value2,... WHERE ID=1111;" << endl;
+    cout << "\nTo delete a record from database: " << endl;
+    cout << "DELETE FROM <table> WHERE ID=1111;" << endl;
+    cout << "\n===================================" << endl;
+
+    cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
+    for (const auto &employee : employees)
+    {
+        cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
+    }
+
+    cout << "ENTER SQL QUERY:" << endl;
+
     getline(cin, sqlQuery);
     processSQL(sqlQuery);
 
