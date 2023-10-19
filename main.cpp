@@ -275,13 +275,13 @@ void deleteFrom(int tableSelected, int _id)
         if (employees.count(_id) > 0)
         {
             employees.erase(_id);
-            cout << "ID\t\tDEPARTMENTID\t\tFIRSTNAME\t\tLASTNAME\t\tJOBTITLE" << endl;
+            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
             for (const auto &employee : employees)
             {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << employee.second.getFirstName() << "\t\t" << employee.second.getLastName() << "\t\t" << employee.second.getJobTitle() << endl;
+                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
             }
 
-            cout << "DELETED ID:" << _id << endl;
+            cout << "\nDELETED ID:" << _id << endl;
         }
         else
         {
@@ -294,12 +294,12 @@ void deleteFrom(int tableSelected, int _id)
         if (departments.count(_id) > 0)
         {
             departments.erase(_id);
-            cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+            cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
             for (const auto &department : departments)
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
             }
-            cout << "DELETED ID:" << _id << endl;
+            cout << "\nDELETED ID:" << _id << endl;
         }
         else
         {
@@ -313,12 +313,12 @@ void deleteFrom(int tableSelected, int _id)
         if (companies.count(_id) > 0)
         {
             companies.erase(_id);
-            cout << "ID\t\tNAME" << endl;
+            cout << addSpaces("ID") << addSpaces("NAME") << endl;
             for (const auto &company : companies)
             {
-                cout << company.first << "\t\t" << company.second.getName() << endl;
+                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
             }
-            cout << "DELETED ID:" << _id << endl;
+            cout << "\nDELETED ID:" << _id << endl;
         }
         else
         {
@@ -340,7 +340,6 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
 {
     string empId = _values[_values.size() - 1];
     int validId = processInt(empId);
-    cout << "Id: " << validId << endl;
     switch (tableSelected)
     {
     case 1:
@@ -353,30 +352,26 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
                 {
                     int check = processInt(_values[i]);
                     employees[validId].setDepartmentId(check);
-                    cout << "deptID: " << check << endl;
                 }
                 else if (_columns[i] == "FIRSTNAME")
                 {
                     string *check = processString(_values[i]);
                     employees[validId].setFirstName(*check);
-                    cout << "FNAME: " << *check << endl;
                 }
 
                 else if (_columns[i] == "LASTNAME")
                 {
                     string *check = processString(_values[i]);
                     employees[validId].setLastName(*check);
-                    cout << "LNAME: " << *check << endl;
                 }
                 else if (_columns[i] == "JOBTITLE")
                 {
                     string *check = processString(_values[i]);
                     employees[validId].setJobTitle(*check);
-                    cout << "jt: " << *check << endl;
                 }
                 else if (_columns[i] == "ID")
                 {
-                    cout << "ID: " << _values[i] << endl;
+                    // cout << "ID: " << _values[i] << endl;
                 }
                 else
                 {
@@ -390,11 +385,12 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
             exit(0);
         }
 
-        cout << "ID\t\t" << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
+        cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
         for (const auto &employee : employees)
         {
             cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
         }
+        cout << "Updating employees! " << endl;
     }
     break;
     case 2:
@@ -408,30 +404,26 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
                 {
                     int check = processInt(_values[i]);
                     departments[validId].setCompanyId(check);
-                    cout << "compId: " << check << endl;
                 }
                 else if (_columns[i] == "MANAGEDBY")
                 {
                     int check = processInt(_values[i]);
                     departments[validId].setManagedBy(check);
-                    cout << "MANAGEDBY: " << check << endl;
                 }
 
                 else if (_columns[i] == "NAME")
                 {
                     string *check = processString(_values[i]);
                     departments[validId].setName(*check);
-                    cout << "NAME: " << *check << endl;
                 }
                 else if (_columns[i] == "LOCATION")
                 {
                     string *check = processString(_values[i]);
                     departments[validId].setLocation(*check);
-                    cout << "LOCATION: " << *check << endl;
                 }
                 else if (_columns[i] == "ID")
                 {
-                    cout << "ID: " << _values[i] << endl;
+                    // cout << "ID: " << _values[i] << endl;
                 }
                 else
                 {
@@ -445,11 +437,12 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
             exit(0);
         }
 
-        cout << "ID\t\tCOMPANYID\t\tMANAGEDBY\t\tNAME\t\tLOCATION" << endl;
+        cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
         for (const auto &department : departments)
         {
-            cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << department.second.getName() << "\t\t" << department.second.getLocation() << endl;
+            cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
         }
+        cout << "Updating departments! " << endl;
     }
     break;
     case 3:
@@ -463,11 +456,10 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
                 {
                     string *check = processString(_values[i]);
                     companies[validId].setName(*check);
-                    cout << "NAME: " << *check << endl;
                 }
                 else if (_columns[i] == "ID")
                 {
-                    cout << "ID: " << _values[i] << endl;
+                    // cout << "ID: " << _values[i] << endl;
                 }
                 else
                 {
@@ -481,12 +473,12 @@ void update(int tableSelected, vector<string> _columns, vector<string> _values)
             exit(0);
         }
 
-        cout << "ID\t\tNAME" << endl;
+        cout << addSpaces("ID") << addSpaces("NAME") << endl;
         for (const auto &company : companies)
         {
-            cout << company.first << "\t\t" << company.second.getName() << endl;
+            cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
         }
-        cout << "Updating company: " << endl;
+        cout << "Updating company! " << endl;
     }
     break;
     default:
@@ -768,12 +760,13 @@ void create(int tableSelected, string &_values)
 
             employees.insert(pair<int, Employee>(id, Employee(id, departmentId, *firstName, *lastName, *jobTitle)));
 
-            for (const auto &entry : employees)
+            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
+            for (const auto &employee : employees)
             {
-                cout << "Employee ID: " << entry.first << ", First Name: " << entry.second.getFirstName() << endl;
+                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
             }
 
-            cout << "Created Employee!" << _values << endl;
+            cout << "\nCreated Employee!" << endl;
         }
         else
         {
@@ -794,12 +787,13 @@ void create(int tableSelected, string &_values)
 
             departments.insert(pair<int, Department>(id, Department(id, companyId, managedBy, *name, *location)));
 
-            for (const auto &entry : departments)
+            cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
+            for (const auto &department : departments)
             {
-                cout << "Department ID: " << entry.first << ", Name: " << entry.second.getManagedBy() << endl;
+                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
             }
 
-            cout << "Created Department!" << _values << endl;
+            cout << "\nCreated Department!" << endl;
         }
         else
         {
@@ -817,11 +811,13 @@ void create(int tableSelected, string &_values)
             string *name = processString(deconstructedQuery[1]);
 
             companies.insert(pair<int, Company>(id, Company(id, *name)));
-            for (const auto &entry : companies)
+
+            cout << addSpaces("ID") << addSpaces("NAME") << endl;
+            for (const auto &company : companies)
             {
-                cout << "Company ID: " << entry.first << ", Name: " << entry.second.getName() << endl;
+                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
             }
-            cout << "Created Company!" << _values << endl;
+            cout << "\nCreated Company!" << endl;
         }
         else
         {
@@ -1101,8 +1097,25 @@ void processSQL(string &_sqlQuery)
 int main()
 {
     system("clear");
-    cout << "* WELCOME TO THE COMPANY DATABASE *" << endl;
+    cout << "\n\n\n* WELCOME TO THE COMPANY DATABASE *" << endl;
     cout << "===================================" << endl;
+    cout << "Company Database Structure:" << endl;
+    cout << "\nCompanies" << endl;
+    cout << "--ID" << endl;
+    cout << "--NAME" << endl;
+    cout << "Departments" << endl;
+    cout << "--ID" << endl;
+    cout << "--COMPANYID" << endl;
+    cout << "--MANAGEDBY" << endl;
+    cout << "--NAME" << endl;
+    cout << "--LOCATION" << endl;
+    cout << "Employees" << endl;
+    cout << "--ID" << endl;
+    cout << "--DEPARTMENTID" << endl;
+    cout << "--FIRSTNAME" << endl;
+    cout << "--LASTNAME" << endl;
+    cout << "--JOBTITLE" << endl;
+    cout << "\n===================================" << endl;
 
     // Populate tables
     companies.insert(pair<int, Company>(1000, Company(1000, "Apple")));
@@ -1139,13 +1152,7 @@ int main()
     cout << "DELETE FROM <table> WHERE ID=1111;" << endl;
     cout << "\n===================================" << endl;
 
-    cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-    for (const auto &employee : employees)
-    {
-        cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-    }
-
-    cout << "ENTER SQL QUERY:" << endl;
+    cout << "\nENTER SQL QUERY:" << endl;
 
     getline(cin, sqlQuery);
     processSQL(sqlQuery);
