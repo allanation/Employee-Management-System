@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -758,6 +759,13 @@ void create(int tableSelected, string &_values)
             string *lastName = processString(deconstructedQuery[3]);
             string *jobTitle = processString(deconstructedQuery[4]);
 
+            ofstream f1;
+            Employee e = Employee(id, departmentId, *firstName, *lastName, *jobTitle);
+
+            f1.open("Employees.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&e), sizeof(e));
+            f1.close();
+
             employees.insert(pair<int, Employee>(id, Employee(id, departmentId, *firstName, *lastName, *jobTitle)));
 
             cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
@@ -785,6 +793,13 @@ void create(int tableSelected, string &_values)
             string *name = processString(deconstructedQuery[3]);
             string *location = processString(deconstructedQuery[4]);
 
+            ofstream f1;
+            Department d = Department(id, companyId, managedBy, *name, *location);
+
+            f1.open("Departments.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&d), sizeof(d));
+            f1.close();
+
             departments.insert(pair<int, Department>(id, Department(id, companyId, managedBy, *name, *location)));
 
             cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
@@ -809,6 +824,12 @@ void create(int tableSelected, string &_values)
         {
             int id = processInt(deconstructedQuery[0]);
             string *name = processString(deconstructedQuery[1]);
+            ofstream f1;
+            Company c = Company(id, *name);
+
+            f1.open("Companies.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&c), sizeof(c));
+            f1.close();
 
             companies.insert(pair<int, Company>(id, Company(id, *name)));
 
@@ -1153,6 +1174,24 @@ int main()
     cout << "\n===================================" << endl;
 
     cout << "\nENTER SQL QUERY:" << endl;
+
+    // ifstream f2;
+    // f2.open("Companies.dat", ios::binary);
+
+    // cout << "\n=======================================\n";
+    // cout << "LIST OF EMPLOYEES";
+    // cout << "\n=======================================\n";
+
+    // Company e;
+    // while (!f2.eof())
+    // {
+    //     if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
+    //     {
+    //         e.printCompany();
+    //         cout << "\n=======================================\n";
+    //     }
+    // };
+    // f2.close();
 
     getline(cin, sqlQuery);
     processSQL(sqlQuery);
