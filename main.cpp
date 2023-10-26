@@ -7,6 +7,22 @@
 
 using namespace std;
 
+string addSpaces(const string &_string)
+{
+    size_t maxWidth = 16;
+    if (_string.length() >= maxWidth)
+    {
+        return _string;
+    }
+
+    size_t spacesToAdd = maxWidth - _string.length();
+
+    string spaces(spacesToAdd, ' ');
+
+    string spacedString = _string + spaces;
+    return spacedString;
+}
+
 // Define the Employee class for more complex behavior and encapsulation
 class Employee
 {
@@ -74,11 +90,7 @@ public:
 
     void printEmployee()
     {
-        cout << "Employee ID: " << id << endl;
-        cout << "Dapartment ID: " << departmentId << endl;
-        cout << "First Name: " << firstName << endl;
-        cout << "Last Name: " << lastName << endl;
-        cout << "Job Title: " << jobTitle << endl;
+        cout << id << "\t\t" << departmentId << "\t\t" << addSpaces(firstName) << addSpaces(lastName) << addSpaces(jobTitle) << endl;
     }
 };
 
@@ -148,11 +160,7 @@ public:
     }
     void printDepartment()
     {
-        cout << "Department ID: " << id << endl;
-        cout << "Company ID: " << companyId << endl;
-        cout << "Managed By: " << managedBy << endl;
-        cout << "Name: " << name << endl;
-        cout << "Location: " << location << endl;
+        cout << id << "\t\t" << companyId << "\t\t" << managedBy << "\t\t" << addSpaces(name) << addSpaces(location) << endl;
     }
 };
 
@@ -189,26 +197,9 @@ public:
     }
     void printCompany()
     {
-        cout << "Company ID: " << id << endl;
-        cout << "Name: " << name << endl;
+        cout << id << "\t\t" << addSpaces(name) << endl;
     }
 };
-
-string addSpaces(const string &_string)
-{
-    size_t maxWidth = 16;
-    if (_string.length() >= maxWidth)
-    {
-        return _string;
-    }
-
-    size_t spacesToAdd = maxWidth - _string.length();
-
-    string spaces(spacesToAdd, ' ');
-
-    string spacedString = _string + spaces;
-    return spacedString;
-}
 
 string *toUppercase(const string &_word)
 {
@@ -269,63 +260,95 @@ map<int, Company> companies;
 
 void deleteFrom(int tableSelected, int _id)
 {
+    ofstream f4;
+    ifstream f5;
     switch (tableSelected)
     {
     case 1:
     {
-        if (employees.count(_id) > 0)
-        {
-            employees.erase(_id);
-            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
-            {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
+        Employee e;
+        int flag = 0;
 
-            cout << "\nDELETED ID:" << _id << endl;
-        }
-        else
+        f5.open("Employees.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);      // write mode
+
+        while (!f5.eof())
         {
-            cout << "INVALID ID!" << endl;
+            if (f5.read(reinterpret_cast<char *>(&e), sizeof(e)))
+            {
+                if (_id != e.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&e), sizeof(e));
+                }
+                else
+                    flag = 1;
+            }
         }
+
+        f5.close();
+        f4.close();
+        remove("Employees.dat");
+        rename("temp.dat", "Employees.dat");
+
+        flag == 1 ? cout << "Employee deleted!" << endl : cout << "No employee found!" << endl;
     }
     break;
     case 2:
     {
-        if (departments.count(_id) > 0)
+        Department d;
+        int flag = 0;
+
+        f5.open("Departments.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);        // write mode
+
+        while (!f5.eof())
         {
-            departments.erase(_id);
-            cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-            for (const auto &department : departments)
+            if (f5.read(reinterpret_cast<char *>(&d), sizeof(d)))
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
+                if (_id != d.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&d), sizeof(d));
+                }
+                else
+                    flag = 1;
             }
-            cout << "\nDELETED ID:" << _id << endl;
         }
-        else
-        {
-            cout << "INVALID ID!" << endl;
-            exit(0);
-        }
+
+        f5.close();
+        f4.close();
+        remove("Departments.dat");
+        rename("temp.dat", "Departments.dat");
+
+        flag == 1 ? cout << "Department deleted!" << endl : cout << "No department found!" << endl;
     }
     break;
     case 3:
     {
-        if (companies.count(_id) > 0)
+        Company c;
+        int flag = 0;
+
+        f5.open("Companies.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);      // write mode
+
+        while (!f5.eof())
         {
-            companies.erase(_id);
-            cout << addSpaces("ID") << addSpaces("NAME") << endl;
-            for (const auto &company : companies)
+            if (f5.read(reinterpret_cast<char *>(&c), sizeof(c)))
             {
-                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
+                if (_id != c.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&c), sizeof(c));
+                }
+                else
+                    flag = 1;
             }
-            cout << "\nDELETED ID:" << _id << endl;
         }
-        else
-        {
-            cout << "INVALID ID!" << endl;
-            exit(0);
-        }
+
+        f5.close();
+        f4.close();
+        remove("Companies.dat");
+        rename("temp.dat", "Companies.dat");
+
+        flag == 1 ? cout << "Company deleted!" << endl : cout << "No company found!" << endl;
     }
     break;
     default:
@@ -506,17 +529,25 @@ void select(int tableSelected, string &_columns)
         deconstructedColumns.push_back(query);
     }
 
+    ifstream f2;
+
     switch (tableSelected)
     {
     case 1:
     {
         if (deconstructedColumns[0] == "*")
         {
+            Employee e;
+            f2.open("Employees.dat", ios::binary);
             cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
+            while (!f2.eof())
             {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
+                {
+                    e.printEmployee();
+                }
+            };
+            f2.close();
         }
         else
         {
@@ -583,11 +614,17 @@ void select(int tableSelected, string &_columns)
     {
         if (deconstructedColumns[0] == "*")
         {
+            Department d;
+            f2.open("Departments.dat", ios::binary);
             cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-            for (const auto &department : departments)
+            while (!f2.eof())
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&d), sizeof(d)))
+                {
+                    d.printDepartment();
+                }
+            };
+            f2.close();
         }
         else
         {
@@ -646,18 +683,24 @@ void select(int tableSelected, string &_columns)
                 }
             }
         }
-        cout << "Departments table selected!" << endl;
+        cout << "\nDepartments table selected!" << endl;
     }
     break;
     case 3:
     {
         if (deconstructedColumns[0] == "*")
         {
+            Company c;
+            f2.open("Companies.dat", ios::binary);
             cout << addSpaces("ID") << addSpaces("NAME") << endl;
-            for (const auto &company : companies)
+            while (!f2.eof())
             {
-                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&c), sizeof(c)))
+                {
+                    c.printCompany();
+                }
+            };
+            f2.close();
         }
         else
         {
@@ -704,7 +747,7 @@ void select(int tableSelected, string &_columns)
                 }
             }
         }
-        cout << "Companies table selected!" << endl;
+        cout << "\nCompanies table selected!" << endl;
     }
     break;
     default:
@@ -767,12 +810,6 @@ void create(int tableSelected, string &_values)
             f1.close();
 
             employees.insert(pair<int, Employee>(id, Employee(id, departmentId, *firstName, *lastName, *jobTitle)));
-
-            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
-            {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
 
             cout << "\nCreated Employee!" << endl;
         }
@@ -1194,6 +1231,7 @@ int main()
     // f2.close();
 
     getline(cin, sqlQuery);
+    cout << endl;
     processSQL(sqlQuery);
 
     return 0;
