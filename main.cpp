@@ -3,8 +3,25 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <fstream>
 
 using namespace std;
+
+string addSpaces(const string &_string)
+{
+    size_t maxWidth = 16;
+    if (_string.length() >= maxWidth)
+    {
+        return _string;
+    }
+
+    size_t spacesToAdd = maxWidth - _string.length();
+
+    string spaces(spacesToAdd, ' ');
+
+    string spacedString = _string + spaces;
+    return spacedString;
+}
 
 // Define the Employee class for more complex behavior and encapsulation
 class Employee
@@ -73,11 +90,7 @@ public:
 
     void printEmployee()
     {
-        cout << "Employee ID: " << id << endl;
-        cout << "Dapartment ID: " << departmentId << endl;
-        cout << "First Name: " << firstName << endl;
-        cout << "Last Name: " << lastName << endl;
-        cout << "Job Title: " << jobTitle << endl;
+        cout << id << "\t\t" << departmentId << "\t\t" << addSpaces(firstName) << addSpaces(lastName) << addSpaces(jobTitle) << endl;
     }
 };
 
@@ -147,11 +160,7 @@ public:
     }
     void printDepartment()
     {
-        cout << "Department ID: " << id << endl;
-        cout << "Company ID: " << companyId << endl;
-        cout << "Managed By: " << managedBy << endl;
-        cout << "Name: " << name << endl;
-        cout << "Location: " << location << endl;
+        cout << id << "\t\t" << companyId << "\t\t" << managedBy << "\t\t" << addSpaces(name) << addSpaces(location) << endl;
     }
 };
 
@@ -188,26 +197,9 @@ public:
     }
     void printCompany()
     {
-        cout << "Company ID: " << id << endl;
-        cout << "Name: " << name << endl;
+        cout << id << "\t\t" << addSpaces(name) << endl;
     }
 };
-
-string addSpaces(const string &_string)
-{
-    size_t maxWidth = 16;
-    if (_string.length() >= maxWidth)
-    {
-        return _string;
-    }
-
-    size_t spacesToAdd = maxWidth - _string.length();
-
-    string spaces(spacesToAdd, ' ');
-
-    string spacedString = _string + spaces;
-    return spacedString;
-}
 
 string *toUppercase(const string &_word)
 {
@@ -268,63 +260,95 @@ map<int, Company> companies;
 
 void deleteFrom(int tableSelected, int _id)
 {
+    ofstream f4;
+    ifstream f5;
     switch (tableSelected)
     {
     case 1:
     {
-        if (employees.count(_id) > 0)
-        {
-            employees.erase(_id);
-            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
-            {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
+        Employee e;
+        int flag = 0;
 
-            cout << "\nDELETED ID:" << _id << endl;
-        }
-        else
+        f5.open("Employees.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);      // write mode
+
+        while (!f5.eof())
         {
-            cout << "INVALID ID!" << endl;
+            if (f5.read(reinterpret_cast<char *>(&e), sizeof(e)))
+            {
+                if (_id != e.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&e), sizeof(e));
+                }
+                else
+                    flag = 1;
+            }
         }
+
+        f5.close();
+        f4.close();
+        remove("Employees.dat");
+        rename("temp.dat", "Employees.dat");
+
+        flag == 1 ? cout << "Employee deleted!" << endl : cout << "No employee found!" << endl;
     }
     break;
     case 2:
     {
-        if (departments.count(_id) > 0)
+        Department d;
+        int flag = 0;
+
+        f5.open("Departments.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);        // write mode
+
+        while (!f5.eof())
         {
-            departments.erase(_id);
-            cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-            for (const auto &department : departments)
+            if (f5.read(reinterpret_cast<char *>(&d), sizeof(d)))
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
+                if (_id != d.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&d), sizeof(d));
+                }
+                else
+                    flag = 1;
             }
-            cout << "\nDELETED ID:" << _id << endl;
         }
-        else
-        {
-            cout << "INVALID ID!" << endl;
-            exit(0);
-        }
+
+        f5.close();
+        f4.close();
+        remove("Departments.dat");
+        rename("temp.dat", "Departments.dat");
+
+        flag == 1 ? cout << "Department deleted!" << endl : cout << "No department found!" << endl;
     }
     break;
     case 3:
     {
-        if (companies.count(_id) > 0)
+        Company c;
+        int flag = 0;
+
+        f5.open("Companies.dat", ios::binary); // read mode
+        f4.open("temp.dat", ios::binary);      // write mode
+
+        while (!f5.eof())
         {
-            companies.erase(_id);
-            cout << addSpaces("ID") << addSpaces("NAME") << endl;
-            for (const auto &company : companies)
+            if (f5.read(reinterpret_cast<char *>(&c), sizeof(c)))
             {
-                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
+                if (_id != c.getId())
+                {
+                    f4.write(reinterpret_cast<char *>(&c), sizeof(c));
+                }
+                else
+                    flag = 1;
             }
-            cout << "\nDELETED ID:" << _id << endl;
         }
-        else
-        {
-            cout << "INVALID ID!" << endl;
-            exit(0);
-        }
+
+        f5.close();
+        f4.close();
+        remove("Companies.dat");
+        rename("temp.dat", "Companies.dat");
+
+        flag == 1 ? cout << "Company deleted!" << endl : cout << "No company found!" << endl;
     }
     break;
     default:
@@ -338,147 +362,152 @@ void deleteFrom(int tableSelected, int _id)
 
 void update(int tableSelected, vector<string> _columns, vector<string> _values)
 {
+    fstream f6;
     string empId = _values[_values.size() - 1];
     int validId = processInt(empId);
     switch (tableSelected)
     {
     case 1:
     {
-        if (employees.count(validId) > 0)
+        Employee e;
+        f6.open("Employees.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&e), sizeof(e)))
             {
-                if (_columns[i] == "DEPARTMENTID")
+                if (e.getId() == validId)
                 {
-                    int check = processInt(_values[i]);
-                    employees[validId].setDepartmentId(check);
-                }
-                else if (_columns[i] == "FIRSTNAME")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setFirstName(*check);
-                }
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "DEPARTMENTID")
+                        {
+                            int check = processInt(_values[i]);
+                            e.setDepartmentId(check);
+                        }
+                        else if (_columns[i] == "FIRSTNAME")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setFirstName(*check);
+                        }
 
-                else if (_columns[i] == "LASTNAME")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setLastName(*check);
-                }
-                else if (_columns[i] == "JOBTITLE")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setJobTitle(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                        else if (_columns[i] == "LASTNAME")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setLastName(*check);
+                        }
+                        else if (_columns[i] == "JOBTITLE")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setJobTitle(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(e);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&e), sizeof(e));
+                    cout << "Employee successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-        for (const auto &employee : employees)
-        {
-            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-        }
-        cout << "Updating employees! " << endl;
+        f6.close();
     }
     break;
     case 2:
     {
-        if (departments.count(validId) > 0)
+        Department d;
+        f6.open("Departments.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&d), sizeof(d)))
             {
-                if (_columns[i] == "COMPANYID")
+                if (d.getId() == validId)
                 {
-                    int check = processInt(_values[i]);
-                    departments[validId].setCompanyId(check);
-                }
-                else if (_columns[i] == "MANAGEDBY")
-                {
-                    int check = processInt(_values[i]);
-                    departments[validId].setManagedBy(check);
-                }
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "COMPANYID")
+                        {
+                            int check = processInt(_values[i]);
+                            d.setCompanyId(check);
+                        }
+                        else if (_columns[i] == "MANAGEDBY")
+                        {
+                            int check = processInt(_values[i]);
+                            d.setManagedBy(check);
+                        }
 
-                else if (_columns[i] == "NAME")
-                {
-                    string *check = processString(_values[i]);
-                    departments[validId].setName(*check);
-                }
-                else if (_columns[i] == "LOCATION")
-                {
-                    string *check = processString(_values[i]);
-                    departments[validId].setLocation(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                        else if (_columns[i] == "NAME")
+                        {
+                            string *check = processString(_values[i]);
+                            d.setName(*check);
+                        }
+                        else if (_columns[i] == "LOCATION")
+                        {
+                            string *check = processString(_values[i]);
+                            d.setLocation(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(d);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&d), sizeof(d));
+                    cout << "Department successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-        for (const auto &department : departments)
-        {
-            cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
-        }
-        cout << "Updating departments! " << endl;
+        f6.close();
     }
     break;
     case 3:
     {
-        if (companies.count(validId) > 0)
+        Company c;
+        f6.open("Companies.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&c), sizeof(c)))
             {
-                if (_columns[i] == "NAME")
+                if (c.getId() == validId)
                 {
-                    string *check = processString(_values[i]);
-                    companies[validId].setName(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "NAME")
+                        {
+                            string *check = processString(_values[i]);
+                            c.setName(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(c);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&c), sizeof(c));
+                    cout << "Company successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("NAME") << endl;
-        for (const auto &company : companies)
-        {
-            cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
-        }
-        cout << "Updating company! " << endl;
+        f6.close();
     }
     break;
     default:
@@ -505,21 +534,29 @@ void select(int tableSelected, string &_columns)
         deconstructedColumns.push_back(query);
     }
 
+    ifstream f2;
+
     switch (tableSelected)
     {
     case 1:
     {
+        Employee e;
+        f2.open("Employees.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
+
             cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
+            while (!f2.eof())
             {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
+                {
+                    e.printEmployee();
+                }
+            };
+            f2.close();
         }
         else
         {
-
             for (int i = 0; i < employees.size(); i++)
             {
                 vector<string> uppercaseColumns;
@@ -534,45 +571,46 @@ void select(int tableSelected, string &_columns)
                     }
                     cout << endl;
                 }
-
-                // OPTIMIZATION: remove double for-loop
-                // loop through table and print desired columns
-                for (const auto &employee : employees)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << employee.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "DEPARTMENTID")
-                        {
-                            cout << employee.second.getDepartmentId() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "FIRSTNAME")
-                        {
-                            cout << addSpaces(employee.second.getFirstName());
-                        }
-                        else if (uppercaseColumns[i] == "LASTNAME")
-                        {
-                            cout << addSpaces(employee.second.getLastName());
-                        }
-                        else if (uppercaseColumns[i] == "JOBTITLE")
-                        {
-                            cout << addSpaces(employee.second.getJobTitle());
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Employees table's only columns are:\nid, departmentId, firstName, lastName, jobTitle" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << e.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "DEPARTMENTID")
+                            {
+                                cout << e.getDepartmentId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "FIRSTNAME")
+                            {
+                                cout << addSpaces(e.getFirstName());
+                            }
+                            else if (uppercaseColumns[i] == "LASTNAME")
+                            {
+                                cout << addSpaces(e.getLastName());
+                            }
+                            else if (uppercaseColumns[i] == "JOBTITLE")
+                            {
+                                cout << addSpaces(e.getJobTitle());
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Employees table's only columns are:\nid, departmentId, firstName, lastName, jobTitle" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
         cout << "\nEmployees table selected!" << endl;
@@ -580,13 +618,19 @@ void select(int tableSelected, string &_columns)
     break;
     case 2:
     {
+        Department d;
+        f2.open("Departments.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
             cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-            for (const auto &department : departments)
+            while (!f2.eof())
             {
-                cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&d), sizeof(d)))
+                {
+                    d.printDepartment();
+                }
+            };
+            f2.close();
         }
         else
         {
@@ -607,56 +651,67 @@ void select(int tableSelected, string &_columns)
 
                 // OPTIMIZATION: remove double for-loop
                 // loop through table and print desired columns
-                for (const auto &department : departments)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&d), sizeof(d)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << department.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "COMPANYID")
-                        {
-                            cout << department.second.getCompanyId() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "MANAGEDBY")
-                        {
-                            cout << department.second.getManagedBy() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "NAME")
-                        {
-                            cout << addSpaces(department.second.getName());
-                        }
-                        else if (uppercaseColumns[i] == "LOCATION")
-                        {
-                            cout << addSpaces(department.second.getLocation());
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Departments table's only columns are:\nid, companyId, managedBy, name, location" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << d.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "COMPANYID")
+                            {
+                                cout << d.getCompanyId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "MANAGEDBY")
+                            {
+                                cout << d.getManagedBy() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "NAME")
+                            {
+                                cout << addSpaces(d.getName());
+                            }
+                            else if (uppercaseColumns[i] == "LOCATION")
+                            {
+                                cout << addSpaces(d.getLocation());
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Departments table's only columns are:\nid, companyId, managedBy, name, location" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
-        cout << "Departments table selected!" << endl;
+
+        cout << "\nDepartments table selected!" << endl;
     }
     break;
     case 3:
     {
+        Company c;
+        f2.open("Companies.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
             cout << addSpaces("ID") << addSpaces("NAME") << endl;
-            for (const auto &company : companies)
+            while (!f2.eof())
             {
-                cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
-            }
+                if (f2.read(reinterpret_cast<char *>(&c), sizeof(c)))
+                {
+                    c.printCompany();
+                }
+            };
+            f2.close();
         }
         else
         {
@@ -677,33 +732,38 @@ void select(int tableSelected, string &_columns)
 
                 // OPTIMIZATION: remove double for-loop
                 // loop through table and print desired columns
-                for (const auto &company : companies)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&c), sizeof(c)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << company.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "NAME")
-                        {
-                            cout << addSpaces(company.second.getName()) << "\t\t";
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Companies table's only columns are:\nid, name" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << c.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "NAME")
+                            {
+                                cout << addSpaces(c.getName()) << "\t\t";
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Companies table's only columns are:\nid, name" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
-        cout << "Companies table selected!" << endl;
+
+        cout << "\nCompanies table selected!" << endl;
     }
     break;
     default:
@@ -758,13 +818,14 @@ void create(int tableSelected, string &_values)
             string *lastName = processString(deconstructedQuery[3]);
             string *jobTitle = processString(deconstructedQuery[4]);
 
-            employees.insert(pair<int, Employee>(id, Employee(id, departmentId, *firstName, *lastName, *jobTitle)));
+            ofstream f1;
+            Employee e = Employee(id, departmentId, *firstName, *lastName, *jobTitle);
 
-            cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-            for (const auto &employee : employees)
-            {
-                cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-            }
+            f1.open("Employees.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&e), sizeof(e));
+            f1.close();
+
+            employees.insert(pair<int, Employee>(id, Employee(id, departmentId, *firstName, *lastName, *jobTitle)));
 
             cout << "\nCreated Employee!" << endl;
         }
@@ -784,6 +845,13 @@ void create(int tableSelected, string &_values)
             int managedBy = processInt(deconstructedQuery[2]);
             string *name = processString(deconstructedQuery[3]);
             string *location = processString(deconstructedQuery[4]);
+
+            ofstream f1;
+            Department d = Department(id, companyId, managedBy, *name, *location);
+
+            f1.open("Departments.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&d), sizeof(d));
+            f1.close();
 
             departments.insert(pair<int, Department>(id, Department(id, companyId, managedBy, *name, *location)));
 
@@ -809,6 +877,12 @@ void create(int tableSelected, string &_values)
         {
             int id = processInt(deconstructedQuery[0]);
             string *name = processString(deconstructedQuery[1]);
+            ofstream f1;
+            Company c = Company(id, *name);
+
+            f1.open("Companies.dat", ios::binary | ios::app);
+            f1.write(reinterpret_cast<char *>(&c), sizeof(c));
+            f1.close();
 
             companies.insert(pair<int, Company>(id, Company(id, *name)));
 
@@ -1154,7 +1228,26 @@ int main()
 
     cout << "\nENTER SQL QUERY:" << endl;
 
+    // ifstream f2;
+    // f2.open("Companies.dat", ios::binary);
+
+    // cout << "\n=======================================\n";
+    // cout << "LIST OF EMPLOYEES";
+    // cout << "\n=======================================\n";
+
+    // Company e;
+    // while (!f2.eof())
+    // {
+    //     if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
+    //     {
+    //         e.printCompany();
+    //         cout << "\n=======================================\n";
+    //     }
+    // };
+    // f2.close();
+
     getline(cin, sqlQuery);
+    cout << endl;
     processSQL(sqlQuery);
 
     return 0;
