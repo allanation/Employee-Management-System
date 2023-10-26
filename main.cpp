@@ -535,10 +535,11 @@ void select(int tableSelected, string &_columns)
     {
     case 1:
     {
+        Employee e;
+        f2.open("Employees.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
-            Employee e;
-            f2.open("Employees.dat", ios::binary);
+
             cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
             while (!f2.eof())
             {
@@ -551,7 +552,6 @@ void select(int tableSelected, string &_columns)
         }
         else
         {
-
             for (int i = 0; i < employees.size(); i++)
             {
                 vector<string> uppercaseColumns;
@@ -566,45 +566,46 @@ void select(int tableSelected, string &_columns)
                     }
                     cout << endl;
                 }
-
-                // OPTIMIZATION: remove double for-loop
-                // loop through table and print desired columns
-                for (const auto &employee : employees)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&e), sizeof(e)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << employee.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "DEPARTMENTID")
-                        {
-                            cout << employee.second.getDepartmentId() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "FIRSTNAME")
-                        {
-                            cout << addSpaces(employee.second.getFirstName());
-                        }
-                        else if (uppercaseColumns[i] == "LASTNAME")
-                        {
-                            cout << addSpaces(employee.second.getLastName());
-                        }
-                        else if (uppercaseColumns[i] == "JOBTITLE")
-                        {
-                            cout << addSpaces(employee.second.getJobTitle());
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Employees table's only columns are:\nid, departmentId, firstName, lastName, jobTitle" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << e.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "DEPARTMENTID")
+                            {
+                                cout << e.getDepartmentId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "FIRSTNAME")
+                            {
+                                cout << addSpaces(e.getFirstName());
+                            }
+                            else if (uppercaseColumns[i] == "LASTNAME")
+                            {
+                                cout << addSpaces(e.getLastName());
+                            }
+                            else if (uppercaseColumns[i] == "JOBTITLE")
+                            {
+                                cout << addSpaces(e.getJobTitle());
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Employees table's only columns are:\nid, departmentId, firstName, lastName, jobTitle" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
         cout << "\nEmployees table selected!" << endl;
@@ -612,10 +613,10 @@ void select(int tableSelected, string &_columns)
     break;
     case 2:
     {
+        Department d;
+        f2.open("Departments.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
-            Department d;
-            f2.open("Departments.dat", ios::binary);
             cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
             while (!f2.eof())
             {
@@ -645,53 +646,58 @@ void select(int tableSelected, string &_columns)
 
                 // OPTIMIZATION: remove double for-loop
                 // loop through table and print desired columns
-                for (const auto &department : departments)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&d), sizeof(d)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << department.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "COMPANYID")
-                        {
-                            cout << department.second.getCompanyId() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "MANAGEDBY")
-                        {
-                            cout << department.second.getManagedBy() << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "NAME")
-                        {
-                            cout << addSpaces(department.second.getName());
-                        }
-                        else if (uppercaseColumns[i] == "LOCATION")
-                        {
-                            cout << addSpaces(department.second.getLocation());
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Departments table's only columns are:\nid, companyId, managedBy, name, location" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << d.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "COMPANYID")
+                            {
+                                cout << d.getCompanyId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "MANAGEDBY")
+                            {
+                                cout << d.getManagedBy() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "NAME")
+                            {
+                                cout << addSpaces(d.getName());
+                            }
+                            else if (uppercaseColumns[i] == "LOCATION")
+                            {
+                                cout << addSpaces(d.getLocation());
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Departments table's only columns are:\nid, companyId, managedBy, name, location" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
+
         cout << "\nDepartments table selected!" << endl;
     }
     break;
     case 3:
     {
+        Company c;
+        f2.open("Companies.dat", ios::binary);
         if (deconstructedColumns[0] == "*")
         {
-            Company c;
-            f2.open("Companies.dat", ios::binary);
             cout << addSpaces("ID") << addSpaces("NAME") << endl;
             while (!f2.eof())
             {
@@ -721,32 +727,37 @@ void select(int tableSelected, string &_columns)
 
                 // OPTIMIZATION: remove double for-loop
                 // loop through table and print desired columns
-                for (const auto &company : companies)
+                while (!f2.eof())
                 {
-                    for (int i = 0; i < uppercaseColumns.size(); i++)
+                    if (f2.read(reinterpret_cast<char *>(&c), sizeof(c)))
                     {
-                        if (uppercaseColumns[i] == "ID")
+                        for (int i = 0; i < uppercaseColumns.size(); i++)
                         {
-                            cout << company.first << "\t\t";
-                        }
-                        else if (uppercaseColumns[i] == "NAME")
-                        {
-                            cout << addSpaces(company.second.getName()) << "\t\t";
-                        }
-                        else
-                        {
-                            cout << "Invalid columns: Companies table's only columns are:\nid, name" << endl;
-                            exit(0);
-                        }
+                            if (uppercaseColumns[i] == "ID")
+                            {
+                                cout << c.getId() << "\t\t";
+                            }
+                            else if (uppercaseColumns[i] == "NAME")
+                            {
+                                cout << addSpaces(c.getName()) << "\t\t";
+                            }
+                            else
+                            {
+                                cout << "Invalid columns: Companies table's only columns are:\nid, name" << endl;
+                                exit(0);
+                            }
 
-                        if (i == uppercaseColumns.size() - 1)
-                        {
-                            cout << endl;
+                            if (i == uppercaseColumns.size() - 1)
+                            {
+                                cout << endl;
+                            }
                         }
                     }
-                }
+                };
+                f2.close();
             }
         }
+
         cout << "\nCompanies table selected!" << endl;
     }
     break;
