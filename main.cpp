@@ -362,147 +362,152 @@ void deleteFrom(int tableSelected, int _id)
 
 void update(int tableSelected, vector<string> _columns, vector<string> _values)
 {
+    fstream f6;
     string empId = _values[_values.size() - 1];
     int validId = processInt(empId);
     switch (tableSelected)
     {
     case 1:
     {
-        if (employees.count(validId) > 0)
+        Employee e;
+        f6.open("Employees.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&e), sizeof(e)))
             {
-                if (_columns[i] == "DEPARTMENTID")
+                if (e.getId() == validId)
                 {
-                    int check = processInt(_values[i]);
-                    employees[validId].setDepartmentId(check);
-                }
-                else if (_columns[i] == "FIRSTNAME")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setFirstName(*check);
-                }
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "DEPARTMENTID")
+                        {
+                            int check = processInt(_values[i]);
+                            e.setDepartmentId(check);
+                        }
+                        else if (_columns[i] == "FIRSTNAME")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setFirstName(*check);
+                        }
 
-                else if (_columns[i] == "LASTNAME")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setLastName(*check);
-                }
-                else if (_columns[i] == "JOBTITLE")
-                {
-                    string *check = processString(_values[i]);
-                    employees[validId].setJobTitle(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                        else if (_columns[i] == "LASTNAME")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setLastName(*check);
+                        }
+                        else if (_columns[i] == "JOBTITLE")
+                        {
+                            string *check = processString(_values[i]);
+                            e.setJobTitle(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(e);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&e), sizeof(e));
+                    cout << "Employee successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("DEPARTMENTID") << addSpaces("FIRSTNAME") << addSpaces("LASTNAME") << addSpaces("JOBTITLE") << endl;
-        for (const auto &employee : employees)
-        {
-            cout << employee.first << "\t\t" << employee.second.getDepartmentId() << "\t\t" << addSpaces(employee.second.getFirstName()) << addSpaces(employee.second.getLastName()) << addSpaces(employee.second.getJobTitle()) << endl;
-        }
-        cout << "Updating employees! " << endl;
+        f6.close();
     }
     break;
     case 2:
     {
-        if (departments.count(validId) > 0)
+        Department d;
+        f6.open("Departments.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&d), sizeof(d)))
             {
-                if (_columns[i] == "COMPANYID")
+                if (d.getId() == validId)
                 {
-                    int check = processInt(_values[i]);
-                    departments[validId].setCompanyId(check);
-                }
-                else if (_columns[i] == "MANAGEDBY")
-                {
-                    int check = processInt(_values[i]);
-                    departments[validId].setManagedBy(check);
-                }
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "COMPANYID")
+                        {
+                            int check = processInt(_values[i]);
+                            d.setCompanyId(check);
+                        }
+                        else if (_columns[i] == "MANAGEDBY")
+                        {
+                            int check = processInt(_values[i]);
+                            d.setManagedBy(check);
+                        }
 
-                else if (_columns[i] == "NAME")
-                {
-                    string *check = processString(_values[i]);
-                    departments[validId].setName(*check);
-                }
-                else if (_columns[i] == "LOCATION")
-                {
-                    string *check = processString(_values[i]);
-                    departments[validId].setLocation(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                        else if (_columns[i] == "NAME")
+                        {
+                            string *check = processString(_values[i]);
+                            d.setName(*check);
+                        }
+                        else if (_columns[i] == "LOCATION")
+                        {
+                            string *check = processString(_values[i]);
+                            d.setLocation(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(d);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&d), sizeof(d));
+                    cout << "Department successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("COMPANYID") << addSpaces("MANAGEDBY") << addSpaces("NAME") << addSpaces("LOCATION") << endl;
-        for (const auto &department : departments)
-        {
-            cout << department.first << "\t\t" << department.second.getCompanyId() << "\t\t" << department.second.getManagedBy() << "\t\t" << addSpaces(department.second.getName()) << addSpaces(department.second.getLocation()) << endl;
-        }
-        cout << "Updating departments! " << endl;
+        f6.close();
     }
     break;
     case 3:
     {
-        if (companies.count(validId) > 0)
+        Company c;
+        f6.open("Companies.dat", ios::binary | ios::out | ios::in);
+        while (!f6.eof())
         {
-            // OPTIMIZATION: change this to a for(const auto&entry:departments) loop
-            for (int i = 0; i < _columns.size(); i++)
+            if (f6.read(reinterpret_cast<char *>(&c), sizeof(c)))
             {
-                if (_columns[i] == "NAME")
+                if (c.getId() == validId)
                 {
-                    string *check = processString(_values[i]);
-                    companies[validId].setName(*check);
-                }
-                else if (_columns[i] == "ID")
-                {
-                    // cout << "ID: " << _values[i] << endl;
-                }
-                else
-                {
-                    cout << "Invalid column name!" << endl;
+                    for (int i = 0; i < _columns.size(); i++)
+                    {
+                        if (_columns[i] == "NAME")
+                        {
+                            string *check = processString(_values[i]);
+                            c.setName(*check);
+                        }
+                        else if (_columns[i] == "ID")
+                        {
+                            // cout << "ID: " << _values[i] << endl;
+                        }
+                        else
+                        {
+                            cout << "Invalid column name!" << endl;
+                        }
+                    }
+                    int pos = -1 * sizeof(c);
+                    f6.seekp(pos, ios::cur);
+                    f6.write(reinterpret_cast<char *>(&c), sizeof(c));
+                    cout << "Company successfully updated!" << endl;
+                    return;
                 }
             }
         }
-        else
-        {
-            cout << "ID doesn't exits" << endl;
-            exit(0);
-        }
-
-        cout << addSpaces("ID") << addSpaces("NAME") << endl;
-        for (const auto &company : companies)
-        {
-            cout << company.first << "\t\t" << addSpaces(company.second.getName()) << endl;
-        }
-        cout << "Updating company! " << endl;
+        f6.close();
     }
     break;
     default:
